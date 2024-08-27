@@ -1,6 +1,10 @@
 crawling_url: "https://casenote.kr/search"
-q: "이혼" # search query
-period: 4 # filter category. "4" means input period directly.
-period_from: 2024 # different with real variable mean. This means searching range. Search period range fixed to 1 year.
-period_to: 1980
-page: 1 # It can be used, or not. First Search page fixed on 1.
+param:
+  q: "이혼" # search query
+  period: 4 # filter category. "4" means input period directly.
+  period_from: 2024 # different with real variable mean. This means searching range. Search period range fixed to 1 year.
+  period_to: 2024 # must be same with 'period_from'.
+  page: 1 # It can be used, or not. First Search page fixed on 1.
+header:
+  User-Agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
+search_year_range: 53
