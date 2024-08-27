@@ -7,7 +7,9 @@ import requests as req
 from bs4 import BeautifulSoup
 
 
-
+######################
+## Get method request and response using request and BeautifulSoup
+######################
 def get_soup(url:str, params:dict, headers:dict)->BeautifulSoup:
     response = req.get(url, params=params, headers=headers)
 
@@ -20,6 +22,9 @@ def get_soup(url:str, params:dict, headers:dict)->BeautifulSoup:
         
 
 
+#######################
+## Get link infos and page infos search list
+#######################
 def get_links(soup:BeautifulSoup)->list:
     links = soup.findAll('a', 'casename')
     
@@ -40,3 +45,12 @@ def get_page_number(soup:BeautifulSoup)-> int:
     page_num = page_num.replace("</span>", "")
     page_num = int(page_num)
     return page_num
+
+
+#######################
+## Get judgement content data 
+#######################
+def get_judgement_content(soup:BeautifulSoup)->tuple:
+    title = ""
+    content = ""
+    return (title, content)
