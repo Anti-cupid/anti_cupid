@@ -10,8 +10,22 @@ from bs4 import BeautifulSoup
 ######################
 ## Get method request and response using request and BeautifulSoup
 ######################
-def get_soup(url:str, params:dict, headers:dict)->BeautifulSoup:
-    response = req.get(url, params=params, headers=headers)
+def get_soup(url:str, params:dict, headers:dict, proxy:bool=False)->BeautifulSoup:
+    
+    if proxy:
+        proxies = {
+            'http': 'socks5://127.0.0.1:9050',
+            'https': 'socks5://127.0.0.1:9050',
+        }
+        if params is not None:
+            response = req.get(url, params=params, headers=headers, verify=False, proxies=proxies)
+        else:
+            response = req.get(url, headers=headers, verify=False, proxies=proxies)
+    else:
+        if params is not None:
+            response = req.get(url, params=params, headers=headers, verify=False)
+        else:
+            response = req.get(url, headers=headers, verify=False)
 
     if response.status_code ==200:
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -19,7 +33,8 @@ def get_soup(url:str, params:dict, headers:dict)->BeautifulSoup:
     else:
         print("Request Response Error Occured. Error code : ", response.status_code)
         sys.exit()
-        
+
+
 
 
 #######################
@@ -51,6 +66,9 @@ def get_page_number(soup:BeautifulSoup)-> int:
 ## Get judgement content data 
 #######################
 def get_judgement_content(soup:BeautifulSoup)->tuple:
-    title = ""
-    content = ""
-    return (title, content)
+    title = soup.find('div', 'cn-case-title')
+
+    content_title = soup.find_all('p', 'title')
+    content_main = soup.find_all('p', 'main-sentence')
+
+    return (title, content_title, content_main)

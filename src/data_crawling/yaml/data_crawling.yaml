@@ -1,4 +1,4 @@
-crawling_url: "https://casenote.kr/search"
+crawling_url: "https://casenote.kr"
 param:
   q: "이혼" # search query
   period: 4 # filter category. "4" means input period directly.
