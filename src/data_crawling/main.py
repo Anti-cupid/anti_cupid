@@ -36,9 +36,32 @@ if __name__ == "__main__":
     # # get documents from each link
     # ########################
     for link in links_postfix:
-        temp = yaml_data['crawling_url'] + link
+        # temp = yaml_data['crawling_url'] + link
+        
+        # test
+        # temp = yaml_data['crawling_url'] + "/대법원/2012므2918"
+        # temp = yaml_data['crawling_url'] + "/서울고등법원/2015르717"
+        # temp = yaml_data['crawling_url'] + "/대법원/2011므1116"
+        temp = yaml_data['crawling_url'] + "/대법원/83므20"
+        # temp = yaml_data['crawling_url'] + "/부산가정법원/2014드단201540"
+        
+        
         # print(temp)
         soup = get_soup(temp, params=None, headers=yaml_data['header'], proxy=True)
         data = get_judgement_content(soup)
-        print(data[2])
+        
+        
+        for i in data[1]:
+            print("==================")
+            print(i.text)
+
+        
+        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@2")
+        for i in data[2]:
+            print("==================")
+            print(i.text)
+        
+        # for i in data:
+        #     print(i.text)
+        
         break

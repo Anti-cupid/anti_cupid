@@ -68,7 +68,14 @@ def get_page_number(soup:BeautifulSoup)-> int:
 def get_judgement_content(soup:BeautifulSoup)->tuple:
     title = soup.find('div', 'cn-case-title')
 
-    content_title = soup.find_all('p', 'title')
-    content_main = soup.find_all('p', 'main-sentence')
+    # content_title = soup.find_all('p', 'title')
+    # content_main = soup.find_all('p', 'main-sentence')
+
+    content_title = soup.find_all('div', 'panel')
+    # content_main = soup.find_all('div', 'summary')
+    content_main = soup.find_all('div', 'cn-case-body')
 
     return (title, content_title, content_main)
+    
+    # content = soup.find_all('div', {'class':'cn-case-left fs3'})
+    # return content
