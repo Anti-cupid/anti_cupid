@@ -14,6 +14,6 @@ https://knou.ac.kr/bbs/law/2096/180952/artclView.do
 
 ## Algorithm
 ### Model
-Currently, the base model being utilized for this project is the beomi/Llama-3-Open-Ko-8B open-sourced Ko-LLM model provided by HuggingFace. Please refer to the following link for more details regarding the model.
+Currently, the base model being utilized for this project is the MLP-KTLim/llama-3-Korean-Bllossom-8B open-sourced Ko-LLM model provided by HuggingFace. Please refer to the following link for more details regarding the model.
 
-https://huggingface.co/beomi/Llama-3-Open-Ko-8B 
+https://huggingface.co/MLP-KTLim/llama-3-Korean-Bllossom-8B
