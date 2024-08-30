@@ -57,9 +57,9 @@ if __name__ == "__main__":
 
         
         print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@2")
-        for i in data[2]:
-            print("==================")
-            print(i.text)
+        # for i in data[2]:
+        #     print("==================")
+        #     print(i.text.strip())
         
         # for i in data:
         #     print(i.text)

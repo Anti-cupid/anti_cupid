@@ -5,7 +5,7 @@ Utils for html content
 import sys
 import requests as req
 from bs4 import BeautifulSoup
-
+import pprint
 
 ######################
 ## Get method request and response using request and BeautifulSoup
@@ -74,6 +74,33 @@ def get_judgement_content(soup:BeautifulSoup)->tuple:
     content_title = soup.find_all('div', 'panel')
     # content_main = soup.find_all('div', 'summary')
     content_main = soup.find_all('div', 'cn-case-body')
+
+    content_split = {
+        '판시사항':"",
+        '판결요지':"",
+        '참조조문':"",
+        '원심판결':"",
+        '주문':"",
+        '이유':"",
+        '재판장':"",
+    }
+    key_head = ""
+    for i in content_main:
+        print("==================")
+        print(i.text.strip())
+        i = i.text.strip()
+        temp = i.split("\n")
+        
+        for j in temp:
+            if j.strip().replace(" ", "") in content_split:
+                key_head = j.strip().replace(" ", "")
+            if key_head == "":
+                continue
+            if j == "\n" or j == "":
+                continue
+            content_split[key_head] += j
+    pprint.pprint(content_split)
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@2")
 
     return (title, content_title, content_main)
     
