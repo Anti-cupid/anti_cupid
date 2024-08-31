@@ -51,7 +51,7 @@ def get_links(soup:BeautifulSoup)->list:
 
 def get_page_number(soup:BeautifulSoup)-> int:
     """
-    This function asume that there are no invisible page number.
+    This function asume that there are no invisible page number. It can get maximum 10 pages. 
     """
     page = soup.find_all('div', 'cn-pagination')
     span = page[0].find_all('span')
@@ -64,6 +64,16 @@ def get_page_number(soup:BeautifulSoup)-> int:
     page_num = int(page_num)
     return page_num
 
+
+def get_next_page_postfix(soup:BeautifulSoup)-> bool:
+    """
+    Get next page link postfix. If there is no next page, return False, or True
+    """
+    next = soup.find_all('a', 'btn-next')
+    if len(next) != 0:
+       return True
+    else: return False
+    
 
 #######################
 ## Get judgement content data 
