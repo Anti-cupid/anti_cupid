@@ -12,7 +12,7 @@ To use the Anti-Cupid directory, please clone via git, and then install it as an
    First, clone the repository to your local machine:
 
    ```bash
-   git clone https://github.com/Anti-cupid/Anti-Cupid.git
+   git clone https://github.com/Anti-cupid/anti_cupid.git
 
 2. **Navigate to the Repository**  
     Navigate to the local repository directory.
@@ -29,7 +29,7 @@ To use the Anti-Cupid directory, please clone via git, and then install it as an
     If these steps are taken successfully, then this repository should be viewable as a package. This could be confirmed via:  
     
     ```bash
-    python -c "import anti_cupid; print('Successfully imported Anti-Cupid')"
+    python -c "import anti_cupid; print('Successfully imported anti_cupid')"
 
 ## Project Documentation
 https://viridian-cloudberry-de0.notion.site/Anti-Cupid-Project-Documentation-ad2aa022a81e43d7a5b3fd3e165bfa96?pvs=4
