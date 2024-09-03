@@ -26,7 +26,7 @@ To use the Anti-Cupid directory, please clone via git, and then install it as an
     pip install -e .
 
 4. **Confirm Installation**  
-    If these steps are taken successfully, then this repository should be viewable as a package. This could be confirmed via :  
+    If these steps are taken successfully, then this repository should be viewable as a package. This could be confirmed via:  
     
     ```bash
     python -c "import anti_cupid; print('Successfully imported Anti-Cupid')"
