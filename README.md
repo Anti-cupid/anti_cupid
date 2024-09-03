@@ -18,7 +18,7 @@ To use the Anti-Cupid directory, please clone via git, and then install it as an
     Navigate to the local repository directory.
 
     ```bash
-    cd Anti-Cupid
+    cd anti_cupid
 
 3. **Install the Package in Editable Mode**  
     
