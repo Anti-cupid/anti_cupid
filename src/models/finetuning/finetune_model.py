@@ -1,28 +1,39 @@
 import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM, Trainer, TrainingArguments
+from transformers import (
+    AutoTokenizer,
+    AutoModelForCausalLM,
+    Trainer,
+    TrainingArguments,
+    pipeline,
+)
 from datasets import load_dataset, Dataset
 
-model_name = "gpt2"
-model = AutoModelForCausalLM.from_pretrained(model_name)
-tokenizer = AutoTokenizer.from_pretrained(model_name)
+model_name = "MLP-KTLim/llama-3-Korean-Bllossom-8B"
 
-train_data = {}  # To-Do
-train_dataset = Dataset.from_dict(train_data)
+model = pipeline(
+    "text-generation",
+    model=model_name,
+    model_kwargs={"torch_dtype": torch.bfloat16},
+    device_map="auto",
+)
 
+# # Tokenization: To-Do
+# tokenizer = AutoTokenizer.from_pretrained(model_name)
+# train_data = {}  # To-Do
+# train_dataset = Dataset.from_dict(train_data)
 
-def tokenize_function(examples):
-    inputs = [
-        ex + " " + tokenizer.sep_token + " " + out
-        for ex, out in zip(examples["input"], examples["output"])
-    ]
-    model_inputs = tokenizer(
-        inputs, max_length=512, truncation=True, padding="max_length"
-    )
-    return model_inputs
+# def tokenize_function(examples):
+#     inputs = [
+#         ex + " " + tokenizer.sep_token + " " + out
+#         for ex, out in zip(examples["input"], examples["output"])
+#     ]
+#     model_inputs = tokenizer(
+#         inputs, max_length=512, truncation=True, padding="max_length"
+#     )
+#     return model_inputs
 
-
-tokenized_datasets = train_dataset.map(tokenize_function, batched=True)
-tokenized_datasets.set_format(type="torch", columns=["input_ids", "attention_mask"])
+# tokenized_datasets = train_dataset.map(tokenize_function, batched=True)
+# tokenized_datasets.set_format(type="torch", columns=["input_ids", "attention_mask"])
 
 training_args = TrainingArguments(
     output_dir="./results",
