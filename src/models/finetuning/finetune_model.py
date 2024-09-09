@@ -5,9 +5,11 @@ from transformers import (
     AutoModelForCausalLM,
     Trainer,
     TrainingArguments,
+    IntervalStrategy,
     pipeline,
 )
-from datasets import load_dataset, Dataset
+from peft import LoraConfig, prepare_model_for_kbit_training, get_peft_model
+from datasets import load_dataset, Dataset, DatasetDict
 import json
 
 
@@ -27,23 +29,46 @@ def get_device(rank):
 
 model_name = "MLP-KTLim/llama-3-Korean-Bllossom-8B"
 
-# model = pipeline(
-#     "text-generation",
-#     model=model_name,
-#     model_kwargs={"torch_dtype": torch.bfloat16},
-#     device_map="auto",
-# )
-
-model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16)
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-
-setup_ddp()
-rank = torch.distributed.get_rank()
-device = get_device(rank)
-model.to(device)
-model = torch.nn.parallel.DistributedDataParallel(
-    model, device_ids=[torch.cuda.current_device()]
+model = AutoModelForCausalLM.from_pretrained(
+    model_name, torch_dtype=torch.bfloat16, device_map="auto"
 )
+tokenizer = AutoTokenizer.from_pretrained(model_name, device_map="auto")
+
+for param in model.parameters():
+    param.requires_grad = False
+    if param.ndim == 1:
+        param.data = param.data.to(torch.float32)
+
+model.gradient_checkpointing_enable()
+model.enable_input_require_grads()
+
+
+class CastOutputToFloat(torch.nn.Sequential):
+    def forward(self, x):
+        return super().forward(x).to(torch.float32)
+
+
+model.lm_head = CastOutputToFloat(model.lm_head)
+
+lora_config = LoraConfig(
+    r=2,
+    lora_alpha=8,
+    lora_dropout=0.1,
+    target_modules=["q_proj", "k_proj", "v_proj", "o_proj"],
+    bias="none",
+    task_type="CAUSAL_LM",
+)
+
+model = prepare_model_for_kbit_training(model)
+model = get_peft_model(model, lora_config)
+
+# setup_ddp()
+# rank = torch.distributed.get_rank()
+# device = get_device(rank)
+# model.to(device)
+# model = torch.nn.parallel.DistributedDataParallel(
+#     model, device_ids=[torch.cuda.current_device()]
+# )
 
 # if torch.distributed.get_rank() == 0:
 #     pass
@@ -64,6 +89,10 @@ for example in examples:
         data_dict[key].append(value)
 
 dataset = Dataset.from_dict(data_dict)
+train_test_split = dataset.train_test_split(test_size=0.1)  # 10% for testing
+dataset = DatasetDict(
+    {"train": train_test_split["train"], "test": train_test_split["test"]}
+)
 
 
 def tokenize_function(batch):
@@ -92,7 +121,7 @@ def tokenize_function(batch):
     # Tokenize the targets using the target tokenizer context
     with tokenizer.as_target_tokenizer():
         labels = tokenizer(
-            targets, max_length=64, truncation=True, padding="max_length"
+            targets, max_length=128, truncation=True, padding="max_length"
         )
 
     model_inputs["labels"] = labels["input_ids"]
@@ -101,7 +130,8 @@ def tokenize_function(batch):
 
 training_args = TrainingArguments(
     output_dir="./results",
-    evaluation_strategy="epoch",
+    evaluation_strategy=IntervalStrategy.EPOCH,
+    save_strategy=IntervalStrategy.EPOCH,
     learning_rate=2e-5,
     per_device_train_batch_size=1,
     per_device_eval_batch_size=1,
@@ -113,6 +143,7 @@ training_args = TrainingArguments(
     save_total_limit=2,
     warmup_steps=100,
     gradient_accumulation_steps=16,
+    gradient_checkpointing=True,
     fp16=True,
     load_best_model_at_end=True,
     metric_for_best_model="loss",
@@ -125,7 +156,8 @@ tokenized_datasets = dataset.map(
 trainer = Trainer(
     model=model,
     args=training_args,
-    train_dataset=tokenized_datasets,
+    train_dataset=tokenized_datasets["train"],
+    eval_dataset=tokenized_datasets["test"],
     tokenizer=tokenizer,
 )
 
